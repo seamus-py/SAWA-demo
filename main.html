@@ -5,89 +5,139 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sawa EcoSolutions – Instant Biochar Quote</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<script>
+/* ============================================================
+   PRICING CONFIGURATION — EDIT THIS SECTION TO UPDATE PRICES
+   ============================================================
+
+   HOW QUANTITY TIERS WORK:
+   The tool finds the tier where your quantity falls between
+   "min" and "max" kg, then uses that tier's prices.
+
+   pricePerKgLow  = lowest price per kg in that tier (IDR)
+   pricePerKgHigh = highest price per kg in that tier (IDR)
+
+   USE CASE MULTIPLIERS:
+   These adjust the price up or down based on intended use.
+   1.0 = no change, 1.1 = 10% more, 0.9 = 10% less.
+
+   DELIVERY:
+   deliveryJavaLow/High  = delivery range within Java island (IDR)
+   deliveryOuterLow/High = delivery range to outer islands (IDR)
+
+   Java provinces include: West Java, Central Java, East Java,
+   DKI Jakarta, Banten, Yogyakarta.
+   ============================================================ */
+
+const PRICING = {
+
+  quantityTiers: [
+    { min: 1,    max: 49,   pricePerKgLow: 8000,  pricePerKgHigh: 13000 },
+    { min: 50,   max: 199,  pricePerKgLow: 6500,  pricePerKgHigh: 10000 },
+    { min: 200,  max: 499,  pricePerKgLow: 5000,  pricePerKgHigh: 8000  },
+    { min: 500,  max: 9999, pricePerKgLow: 3500,  pricePerKgHigh: 6500  },
+  ],
+
+  useCaseMultipliers: {
+    "Rice Plantation": 1.0,
+    "Compost":         1.0,
+    "Palm Oil":        1.0,
+    "Horticulture":    1.0,
+    "Livestock Feed":  1.1,   // +10% premium
+    "Construction":    0.85,  // -15% discount
+    "Other":           1.0,
+  },
+
+  delivery: {
+    javaLow:   50000,
+    javaHigh:  150000,
+    outerLow:  200000,
+    outerHigh: 600000,
+  },
+
+  // How many business days the estimate is valid
+  validDays: 10,
+
+  // Product grade label shown per use case
+  productGrades: {
+    "Rice Plantation": "Agricultural Grade – Rice & Soil Amendment",
+    "Compost":         "Agricultural Grade – Compost Blend",
+    "Palm Oil":        "Agricultural Grade – Palm Plantation",
+    "Horticulture":    "Agricultural Grade – Horticulture",
+    "Livestock Feed":  "Feed Grade – Livestock Supplement",
+    "Construction":    "Construction Grade – Soil Stabilisation",
+    "Other":           "Standard Agricultural Grade",
+  },
+
+  // Short recommendation shown per use case
+  recommendations: {
+    "Rice Plantation": "Apply at 1–2 t/ha mixed with compost before planting. Biochar improves water retention and nutrient availability in paddy soils, reducing fertiliser costs over time. Each kg locks away approximately 3 kg of CO₂ permanently.",
+    "Compost":         "Mix biochar into your compost at 10–20% by volume. It accelerates microbial activity, reduces odours, and produces a richer end product that outperforms compost alone.",
+    "Palm Oil":        "Apply 200–500 g per seedling at planting or 1–2 t/ha for established palms. Biochar improves root development and reduces fertiliser leaching in tropical soils.",
+    "Horticulture":    "Blend at 5–15% by volume into growing media. Particularly effective in raised beds and container gardens — improves drainage, aeration, and microbial health.",
+    "Livestock Feed":  "Feed-grade biochar can be added at 0.5–1% of dry feed weight. Supports gut health, reduces methane emissions, and passes through to enrich manure.",
+    "Construction":    "Construction-grade biochar is suitable for soil stabilisation, lightweight fill, and green building applications. Confirm specific technical requirements with the Sawa team.",
+    "Other":           "Contact the Sawa team at info@sawa.green to discuss the best application method and grade for your specific use case.",
+  },
+
+};
+/* ============================================================
+   END OF PRICING CONFIGURATION
+   ============================================================ */
+</script>
+
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --soil:    #2a1f14;
-    --bark:    #4a3320;
-    --moss:    #3d5a2e;
-    --leaf:    #5c8242;
-    --sage:    #8aad6e;
-    --mist:    #d4e6c3;
-    --cream:   #f5f0e8;
-    --char:    #1a1a1a;
-    --smoke:   #6b6b6b;
-    --ash:     #c8c0b4;
+    --soil:  #2a1f14; --bark: #4a3320; --moss: #3d5a2e; --leaf: #5c8242;
+    --sage:  #8aad6e; --mist: #d4e6c3; --cream: #f5f0e8;
+    --char:  #1a1a1a; --smoke: #6b6b6b; --ash: #c8c0b4;
   }
-
   html { scroll-behavior: smooth; }
   body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--char); min-height: 100vh; overflow-x: hidden; }
 
-  /* NAV */
-  header {
-    background: var(--soil);
-    padding: 18px 40px;
-    display: flex; align-items: center; gap: 14px;
-    position: sticky; top: 0; z-index: 100;
-    box-shadow: 0 2px 20px rgba(0,0,0,.35);
-  }
+  header { background: var(--soil); padding: 18px 40px; display: flex; align-items: center; gap: 14px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 20px rgba(0,0,0,.35); }
   .logo-mark { width: 42px; height: 42px; background: var(--leaf); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
   .logo-text { font-family: 'Playfair Display', serif; color: var(--cream); font-size: 1.5rem; font-weight: 700; letter-spacing: .02em; }
   .logo-sub  { color: var(--sage); font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; margin-top: 1px; }
   header .tagline { margin-left: auto; color: var(--ash); font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; }
 
-  /* HERO */
-  .hero {
-    background: linear-gradient(160deg, var(--bark) 0%, var(--soil) 55%, #0f1a0c 100%);
-    padding: 80px 40px 64px; text-align: center; position: relative; overflow: hidden;
-  }
-  .hero::before {
-    content: ''; position: absolute; inset: 0;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%235c8242' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  }
-  .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3.2rem); color: var(--cream); line-height: 1.2; position: relative; }
+  .hero { background: linear-gradient(160deg, var(--bark) 0%, var(--soil) 55%, #0f1a0c 100%); padding: 80px 40px 64px; text-align: center; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%235c8242' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+  .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem,5vw,3.2rem); color: var(--cream); line-height: 1.2; position: relative; }
   .hero h1 span { color: var(--sage); }
   .hero p { margin: 16px auto 0; max-width: 560px; color: var(--ash); font-size: 1rem; line-height: 1.7; position: relative; }
   .co2-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(92,130,66,.2); border: 1px solid var(--leaf); border-radius: 100px; padding: 6px 16px; color: var(--sage); font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 24px; position: relative; }
   .co2-badge::before { content: '🌿'; }
 
-  /* LAYOUT */
   .container { max-width: 860px; margin: 0 auto; padding: 48px 24px 80px; }
 
-  /* STEP PILLS */
   .steps { display: flex; margin-bottom: 40px; border-radius: 12px; overflow: hidden; border: 1px solid var(--ash); }
   .step { flex: 1; padding: 12px 8px; text-align: center; background: #fff; border-right: 1px solid var(--ash); transition: background .2s; }
   .step:last-child { border-right: none; }
   .step.active { background: var(--moss); }
   .step.done   { background: var(--leaf); }
-  .step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--ash); color: #fff; font-size: .72rem; font-weight: 600; display: flex; align-items: center; justify-content: center; margin: 0 auto 4px; transition: background .2s; }
+  .step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--ash); color: #fff; font-size: .72rem; font-weight: 600; display: flex; align-items: center; justify-content: center; margin: 0 auto 4px; }
   .step.active .step-num { background: var(--sage); }
   .step.done   .step-num { background: var(--cream); color: var(--moss); }
   .step-label { font-size: .7rem; color: var(--smoke); text-transform: uppercase; letter-spacing: .06em; }
   .step.active .step-label, .step.done .step-label { color: var(--cream); }
 
-  /* CARD */
   .card { background: #fff; border-radius: 20px; padding: 40px; box-shadow: 0 4px 32px rgba(42,31,20,.08); border: 1px solid rgba(138,173,110,.2); animation: fadeUp .4s ease both; }
   @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
   .card-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--bark); margin-bottom: 6px; }
   .card-sub { color: var(--smoke); font-size: .9rem; margin-bottom: 32px; }
 
-  /* FORM */
   .field { margin-bottom: 22px; }
   label { display: block; font-size: .82rem; font-weight: 500; color: var(--bark); margin-bottom: 6px; letter-spacing: .02em; }
   label .req { color: var(--leaf); margin-left: 2px; }
-  input[type=text], input[type=email], input[type=tel], select, textarea {
-    width: 100%; padding: 11px 14px; border: 1.5px solid var(--ash); border-radius: 10px;
-    font-family: 'DM Sans', sans-serif; font-size: .95rem; color: var(--char);
-    background: var(--cream); transition: border-color .2s, box-shadow .2s; appearance: none; outline: none;
-  }
-  input:focus, select:focus, textarea:focus { border-color: var(--leaf); box-shadow: 0 0 0 3px rgba(92,130,66,.12); background: #fff; }
+  input[type=text], input[type=email], input[type=tel], textarea { width: 100%; padding: 11px 14px; border: 1.5px solid var(--ash); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: .95rem; color: var(--char); background: var(--cream); transition: border-color .2s, box-shadow .2s; appearance: none; outline: none; }
+  input:focus, textarea:focus { border-color: var(--leaf); box-shadow: 0 0 0 3px rgba(92,130,66,.12); background: #fff; }
   textarea { resize: vertical; min-height: 90px; }
   .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   @media(max-width:580px){ .row-2 { grid-template-columns:1fr; } }
 
-  /* TILES */
   .tile-group { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
   .tile input { position: absolute; opacity: 0; pointer-events: none; }
   .tile label { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 14px 10px; border: 1.5px solid var(--ash); border-radius: 12px; cursor: pointer; text-align: center; font-size: .8rem; color: var(--smoke); font-weight: 400; transition: all .18s; background: var(--cream); min-height: 80px; }
@@ -95,29 +145,23 @@
   .tile input:checked + label { border-color: var(--leaf); background: rgba(92,130,66,.08); color: var(--moss); font-weight: 500; box-shadow: 0 0 0 3px rgba(92,130,66,.1); }
   .tile label:hover { border-color: var(--sage); background: #fff; }
 
-  /* QTY */
   .qty-display { font-family: 'Playfair Display', serif; font-size: 2.4rem; color: var(--moss); text-align: center; margin: 8px 0; }
   .qty-display span { font-size: 1rem; color: var(--smoke); }
-  .qty-equiv { text-align: center; font-size: .78rem; color: var(--smoke); margin-top: -4px; margin-bottom: 8px; }
+  .qty-equiv { text-align: center; font-size: .78rem; color: var(--smoke); margin-bottom: 8px; }
   input[type=range] { width: 100%; height: 6px; appearance: none; background: var(--ash); border-radius: 4px; outline: none; cursor: pointer; }
   input[type=range]::-webkit-slider-thumb { appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--leaf); border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
   .qty-presets { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
   .qty-btn { padding: 5px 14px; border-radius: 100px; border: 1.5px solid var(--ash); background: var(--cream); font-size: .78rem; color: var(--smoke); cursor: pointer; transition: all .15s; font-family: 'DM Sans', sans-serif; }
   .qty-btn:hover, .qty-btn.active { border-color: var(--leaf); color: var(--moss); background: rgba(92,130,66,.08); }
 
-  /* BUTTONS */
   .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 32px; border-radius: 12px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: .95rem; font-weight: 500; transition: all .2s; }
   .btn-primary { background: var(--moss); color: #fff; box-shadow: 0 4px 16px rgba(61,90,46,.3); }
-  .btn-primary:hover { background: var(--leaf); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(61,90,46,.35); }
+  .btn-primary:hover { background: var(--leaf); transform: translateY(-1px); }
   .btn-ghost { background: transparent; color: var(--smoke); }
   .btn-ghost:hover { color: var(--bark); }
   .btn-row { display: flex; gap: 12px; justify-content: flex-end; margin-top: 32px; }
 
-  /* RESULT */
-  .quote-header {
-    background: linear-gradient(135deg, var(--moss) 0%, var(--leaf) 100%);
-    border-radius: 16px; padding: 32px; color: #fff; margin-bottom: 24px; position: relative; overflow: hidden;
-  }
+  .quote-header { background: linear-gradient(135deg, var(--moss) 0%, var(--leaf) 100%); border-radius: 16px; padding: 32px; color: #fff; margin-bottom: 24px; position: relative; overflow: hidden; }
   .quote-header::after { content: '🌿'; position: absolute; right: 24px; top: 50%; transform: translateY(-50%); font-size: 4rem; opacity: .2; }
   .quote-header h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 4px; }
   .quote-header .subtitle { opacity: .8; font-size: .88rem; margin-bottom: 20px; }
@@ -129,14 +173,13 @@
   .range-note { font-size: .77rem; opacity: .65; margin-top: 10px; line-height: 1.5; }
 
   .breakdown { background: var(--cream); border-radius: 12px; border: 1px solid rgba(138,173,110,.25); overflow: hidden; margin-bottom: 16px; }
-  .breakdown table { width: 100%; border-collapse: collapse; }
-  .breakdown td { padding: 12px 18px; font-size: .88rem; border-bottom: 1px solid rgba(0,0,0,.06); vertical-align: top; }
-  .breakdown tr:last-child td { border-bottom: none; }
-  .breakdown td:first-child { color: var(--smoke); width: 44%; }
-  .breakdown td:last-child { font-weight: 500; color: var(--bark); text-align: right; }
-  .breakdown .total-row td { background: rgba(92,130,66,.08); font-weight: 700; }
-  .breakdown .total-row td:first-child { color: var(--moss); }
-  .breakdown .total-row td:last-child { color: var(--moss); font-size: 1rem; }
+  .brow { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 18px; border-bottom: 1px solid rgba(0,0,0,.06); font-size: .88rem; gap: 12px; }
+  .brow:last-child { border-bottom: none; }
+  .brow .bl { color: var(--smoke); }
+  .brow .bv { font-weight: 500; color: var(--bark); text-align: right; }
+  .brow.total { background: rgba(92,130,66,.08); }
+  .brow.total .bl { color: var(--moss); font-weight: 700; }
+  .brow.total .bv { color: var(--moss); font-weight: 700; font-size: 1rem; }
 
   .ai-note { background: rgba(92,130,66,.07); border: 1px solid rgba(92,130,66,.2); border-radius: 12px; padding: 20px; margin-top: 16px; }
   .ai-note-head { display: flex; align-items: center; gap: 8px; font-weight: 500; color: var(--moss); margin-bottom: 8px; font-size: .88rem; }
@@ -150,16 +193,9 @@
   .contact-bar a { color: var(--sage); text-decoration: none; }
   .contact-bar a:hover { color: var(--mist); }
 
-  /* LOADING */
-  .loading-card { text-align: center; padding: 60px 20px; }
-  .spinner { width: 48px; height: 48px; border: 4px solid var(--mist); border-top-color: var(--leaf); border-radius: 50%; margin: 0 auto 20px; animation: spin 0.8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-card p { color: var(--smoke); font-size: .9rem; }
-
-  /* MISC */
   .divider { height: 1px; background: rgba(0,0,0,.07); margin: 24px 0; }
   .err { color: #c0392b; font-size: .82rem; margin-top: 4px; display: none; }
-  .has-error input, .has-error select, .has-error textarea { border-color: #e74c3c; }
+  .has-error input, .has-error textarea { border-color: #e74c3c; }
   .has-error .err { display: block; }
   .hidden { display: none !important; }
 </style>
@@ -183,10 +219,10 @@
 
 <div class="container">
 
-  <div class="steps" id="stepBar">
+  <div class="steps">
     <div class="step active" id="pill-1"><div class="step-num">1</div><div class="step-label">Your Info</div></div>
-    <div class="step" id="pill-2"><div class="step-num">2</div><div class="step-label">Order Details</div></div>
-    <div class="step" id="pill-3"><div class="step-num">3</div><div class="step-label">Price Estimate</div></div>
+    <div class="step"        id="pill-2"><div class="step-num">2</div><div class="step-label">Order Details</div></div>
+    <div class="step"        id="pill-3"><div class="step-num">3</div><div class="step-label">Price Estimate</div></div>
   </div>
 
   <!-- STEP 1 -->
@@ -224,7 +260,7 @@
   <!-- STEP 2 -->
   <div class="card hidden" id="step2">
     <div class="card-title">What do you need?</div>
-    <div class="card-sub">Select your quantity and intended use — these are the key factors in your price range.</div>
+    <div class="card-sub">Select your quantity and intended use — these determine your price range.</div>
 
     <div class="field">
       <label>Quantity of Biochar <span class="req">*</span></label>
@@ -259,19 +295,11 @@
       <div class="err">Please select an intended use.</div>
     </div>
 
-    <div class="field"><label>Additional Information</label><textarea id="notes" placeholder="Any specific requirements, delivery timeframe, or questions…"></textarea></div>
+    <div class="field"><label>Additional Notes</label><textarea id="notes" placeholder="Any specific requirements, delivery timeframe, or questions…"></textarea></div>
 
     <div class="btn-row">
       <button class="btn btn-ghost" onclick="goStep1()">← Back</button>
-      <button class="btn btn-primary" onclick="generateQuote()">Get My Price Estimate ✦</button>
-    </div>
-  </div>
-
-  <!-- LOADING -->
-  <div class="card hidden" id="stepLoading">
-    <div class="loading-card">
-      <div class="spinner"></div>
-      <p>Analysing your requirements and generating a price range…</p>
+      <button class="btn btn-primary" onclick="showQuote()">Get My Price Estimate ✦</button>
     </div>
   </div>
 
@@ -290,17 +318,15 @@
       <div class="range-note" id="rangeNote"></div>
     </div>
 
-    <div class="breakdown">
-      <table id="quoteTable"></table>
-    </div>
+    <div class="breakdown" id="breakdown"></div>
 
     <div class="ai-note">
       <div class="ai-note-head">📋 Product Recommendation</div>
-      <p id="aiNoteText"></p>
+      <p id="recommendation"></p>
     </div>
 
     <div class="warning-note">
-      <strong>⚠️ About this estimate:</strong> <span id="warningText"></span>
+      <strong>⚠️ About this estimate:</strong> This is an indicative price range. Final pricing is confirmed by the Sawa team based on your exact order, current stock, and delivery address. Estimate valid for <span id="validDays"></span> business days.
     </div>
 
     <div class="contact-bar">
@@ -321,8 +347,9 @@
 
 <script>
 let qty = 50;
-let savedData = null;
+let savedQuote = null;
 
+// ── QTY SLIDER ──
 function updateQty(v) {
   qty = parseInt(v);
   document.getElementById('qtyDisplay').innerHTML = `${qty.toLocaleString()} <span>kg</span>`;
@@ -346,6 +373,7 @@ function getEquiv(q) {
   return '≈ 1 tonne – bulk order';
 }
 
+// ── STEP PILLS ──
 function setPills(active) {
   for (let i = 1; i <= 3; i++) {
     const p = document.getElementById(`pill-${i}`);
@@ -354,113 +382,153 @@ function setPills(active) {
   }
 }
 function showOnly(id) {
-  ['step1','step2','stepLoading','step3'].forEach(s => document.getElementById(s).classList.add('hidden'));
+  ['step1','step2','step3'].forEach(s => document.getElementById(s).classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
+// ── VALIDATION ──
 function validate1() {
   let ok = true;
   [['f-name','fullName',v=>v.trim().length>1],['f-phone','phone',v=>v.trim().length>5],['f-email','email',v=>/\S+@\S+\.\S+/.test(v)],['f-institution','institution',v=>v.trim().length>1],['f-address','address',v=>v.trim().length>2]].forEach(([fid,iid,test])=>{
-    const el = document.getElementById(iid), fd = document.getElementById(fid), p = test(el.value);
-    fd.classList.toggle('has-error', !p); if(!p) ok=false;
+    const el=document.getElementById(iid), fd=document.getElementById(fid), p=test(el.value);
+    fd.classList.toggle('has-error',!p); if(!p) ok=false;
   });
-  const buyer = document.querySelector('input[name="buyer"]:checked');
-  document.getElementById('f-buyer').classList.toggle('has-error', !buyer); if(!buyer) ok=false;
+  const buyer=document.querySelector('input[name="buyer"]:checked');
+  document.getElementById('f-buyer').classList.toggle('has-error',!buyer); if(!buyer) ok=false;
   return ok;
 }
 function validate2() {
-  const use = document.querySelector('input[name="use"]:checked');
-  document.getElementById('f-use').classList.toggle('has-error', !use); return !!use;
+  const use=document.querySelector('input[name="use"]:checked');
+  document.getElementById('f-use').classList.toggle('has-error',!use); return !!use;
 }
 
 function goStep1() { showOnly('step1'); setPills(1); }
-function goStep2() { if (validate1()) { showOnly('step2'); setPills(2); } }
+function goStep2() { if(validate1()) { showOnly('step2'); setPills(2); } }
 
-async function generateQuote() {
+// ── DETECT DELIVERY ZONE ──
+const JAVA_PROVINCES = ['west java', 'central java', 'east java', 'jakarta', 'dki', 'banten', 'yogyakarta', 'jawa barat', 'jawa tengah', 'jawa timur', 'majalengka', 'bandung', 'surabaya', 'semarang', 'bogor', 'depok', 'tangerang', 'bekasi', 'cirebon', 'tasikmalaya'];
+function isJava(address) {
+  const lower = address.toLowerCase();
+  return JAVA_PROVINCES.some(p => lower.includes(p));
+}
+
+// ── CALCULATE QUOTE ──
+function calcQuote(qty, useCase, address) {
+  const tier = PRICING.quantityTiers.find(t => qty >= t.min && qty <= t.max) || PRICING.quantityTiers[PRICING.quantityTiers.length - 1];
+  const mult = PRICING.useCaseMultipliers[useCase] || 1.0;
+
+  const ppkL = Math.round(tier.pricePerKgLow  * mult);
+  const ppkH = Math.round(tier.pricePerKgHigh * mult);
+  const subL = ppkL * qty;
+  const subH = ppkH * qty;
+
+  const java = isJava(address);
+  const delL = java ? PRICING.delivery.javaLow  : PRICING.delivery.outerLow;
+  const delH = java ? PRICING.delivery.javaHigh : PRICING.delivery.outerHigh;
+  const deliveryNote = java
+    ? 'Delivery within Java island'
+    : 'Delivery to outer island — final shipping cost confirmed by Sawa team';
+
+  return {
+    pricePerKgLow: ppkL, pricePerKgHigh: ppkH,
+    subtotalLow: subL,   subtotalHigh: subH,
+    deliveryLow: delL,   deliveryHigh: delH,
+    totalLow: subL + delL, totalHigh: subH + delH,
+    productGrade: PRICING.productGrades[useCase] || 'Standard Agricultural Grade',
+    deliveryNote,
+    recommendation: PRICING.recommendations[useCase] || PRICING.recommendations['Other'],
+    validDays: PRICING.validDays,
+  };
+}
+
+// ── SHOW QUOTE ──
+function showQuote() {
   if (!validate2()) return;
-  showOnly('stepLoading'); setPills(3);
 
-  const d = {
+  const address = document.getElementById('address').value;
+  const useCase = document.querySelector('input[name="use"]:checked').value;
+  const q = calcQuote(qty, useCase, address);
+
+  savedQuote = {
+    ...q,
     name: document.getElementById('fullName').value,
     email: document.getElementById('email').value,
     phone: document.getElementById('phone').value,
     buyer: document.querySelector('input[name="buyer"]:checked').value,
     institution: document.getElementById('institution').value,
-    address: document.getElementById('address').value,
-    qty, use: document.querySelector('input[name="use"]:checked').value,
+    address, qty, useCase,
     notes: document.getElementById('notes').value,
   };
 
-  const prompt = `You are a pricing analyst for Sawa EcoSolutions (sawa.green), an Indonesian biochar company producing biochar from sugarcane bagasse and palm EFB via clean pyrolysis, based in Majalengka, West Java. Generate a realistic PRICE RANGE estimate (low and high).
-
-Customer: ${d.buyer} (${d.institution}), delivery: ${d.address}, quantity: ${d.qty} kg, use: ${d.use}, notes: ${d.notes||'None'}
-
-Pricing context:
-- 5–49 kg: IDR 8,000–13,000/kg
-- 50–199 kg: IDR 6,500–10,000/kg
-- 200–499 kg: IDR 5,000–8,000/kg
-- 500+ kg: IDR 3,500–6,500/kg
-- Livestock feed: +5–15% premium. Construction: -10–20%.
-- Delivery within Java: IDR 50,000–150,000. Outer Java: IDR 200,000–600,000.
-- Cooperatives/NGOs lean toward lower end of range.
-
-Respond ONLY with JSON (no markdown, no extra text):
-{"pricePerKgLow":number,"pricePerKgHigh":number,"subtotalLow":number,"subtotalHigh":number,"deliveryLow":number,"deliveryHigh":number,"totalLow":number,"totalHigh":number,"productGrade":string,"deliveryNote":string,"recommendation":string,"validDays":number}`;
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({model:'claude-sonnet-4-20250514', max_tokens:1000, messages:[{role:'user',content:prompt}]})
-    });
-    const json = await res.json();
-    const raw = json.content.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
-    savedData = {...JSON.parse(raw), ...d};
-    renderQuote(savedData);
-  } catch(e) {
-    const L=qty>=500?3500:qty>=200?5000:qty>=50?6500:8000, H=qty>=500?6500:qty>=200?8000:qty>=50?10000:13000;
-    savedData = {pricePerKgLow:L,pricePerKgHigh:H,subtotalLow:L*qty,subtotalHigh:H*qty,deliveryLow:50000,deliveryHigh:200000,totalLow:L*qty+50000,totalHigh:H*qty+200000,productGrade:'Agricultural Grade – Soil Amendment',deliveryNote:'Standard Java delivery estimate.',recommendation:`For ${d.use.toLowerCase()}, apply biochar at 1–2 t/ha mixed with compost for best results. Improves water retention and nutrient cycling. Each kg sequesters approximately 3 kg of CO₂ permanently.`,validDays:10,...d};
-    renderQuote(savedData);
-  }
+  renderQuote(savedQuote);
 }
 
 function idr(n) { return 'IDR ' + parseInt(n).toLocaleString('id-ID'); }
 
 function renderQuote(q) {
-  document.getElementById('quoteSubtitle').textContent = `${q.qty.toLocaleString()} kg · ${q.use} · ${q.buyer}`;
+  document.getElementById('quoteSubtitle').textContent = `${q.qty.toLocaleString()} kg · ${q.useCase} · ${q.buyer}`;
   document.getElementById('rangeLow').textContent  = idr(q.totalLow);
   document.getElementById('rangeHigh').textContent = idr(q.totalHigh);
   document.getElementById('rangeNote').textContent = `Range reflects quantity tier, delivery to ${q.address}, and product grade. Final price confirmed by the Sawa team.`;
+  document.getElementById('validDays').textContent = q.validDays;
+  document.getElementById('recommendation').textContent = q.recommendation;
 
-  document.getElementById('quoteTable').innerHTML = `
-    <tr><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);color:var(--smoke);width:44%">Product Grade</td><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);font-weight:500;color:var(--bark);text-align:right">${q.productGrade}</td></tr>
-    <tr><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);color:var(--smoke)">Quantity</td><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);font-weight:500;color:var(--bark);text-align:right">${q.qty.toLocaleString()} kg</td></tr>
-    <tr><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);color:var(--smoke)">Unit Price Range</td><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);font-weight:500;color:var(--bark);text-align:right">${idr(q.pricePerKgLow)} – ${idr(q.pricePerKgHigh)} / kg</td></tr>
-    <tr><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);color:var(--smoke)">Subtotal Range</td><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);font-weight:500;color:var(--bark);text-align:right">${idr(q.subtotalLow)} – ${idr(q.subtotalHigh)}</td></tr>
-    <tr><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);color:var(--smoke)">Est. Delivery</td><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);font-weight:500;color:var(--bark);text-align:right">${idr(q.deliveryLow)} – ${idr(q.deliveryHigh)}<br><small style="color:var(--smoke);font-weight:400">${q.deliveryNote}</small></td></tr>
-    <tr style="background:rgba(92,130,66,.08)"><td style="padding:12px 18px;font-size:.88rem;font-weight:700;color:var(--moss)">Total Estimate</td><td style="padding:12px 18px;font-size:1rem;font-weight:700;color:var(--moss);text-align:right">${idr(q.totalLow)} – ${idr(q.totalHigh)}</td></tr>
-    <tr><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);color:var(--smoke)">Buyer</td><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);font-weight:500;color:var(--bark);text-align:right">${q.buyer} — ${q.institution}</td></tr>
-    <tr><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);color:var(--smoke)">Delivery Location</td><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);font-weight:500;color:var(--bark);text-align:right">${q.address}</td></tr>
-    <tr><td style="padding:12px 18px;font-size:.88rem;color:var(--smoke)">Estimate Valid</td><td style="padding:12px 18px;font-size:.88rem;font-weight:500;color:var(--bark);text-align:right">${q.validDays} business days</td></tr>`;
+  const rows = [
+    ['Product Grade',    q.productGrade],
+    ['Quantity',         `${q.qty.toLocaleString()} kg`],
+    ['Unit Price Range', `${idr(q.pricePerKgLow)} – ${idr(q.pricePerKgHigh)} / kg`],
+    ['Subtotal Range',   `${idr(q.subtotalLow)} – ${idr(q.subtotalHigh)}`],
+    ['Est. Delivery',    `${idr(q.deliveryLow)} – ${idr(q.deliveryHigh)}<br><small style="color:var(--smoke);font-weight:400">${q.deliveryNote}</small>`],
+    ['__total__',        `${idr(q.totalLow)} – ${idr(q.totalHigh)}`],
+    ['Buyer',            `${q.buyer} — ${q.institution}`],
+    ['Delivery Location',q.address],
+    ['Estimate Valid',   `${q.validDays} business days`],
+  ];
 
-  document.getElementById('aiNoteText').textContent = q.recommendation;
-  document.getElementById('warningText').textContent = `This is an indicative price range for ${q.qty.toLocaleString()} kg ordered by a ${q.buyer.toLowerCase()} in ${q.address}. The final confirmed price may fall within or near this range depending on current stock, exact delivery address, and any applicable bulk or cooperative discounts. Contact info@sawa.green to confirm your order.`;
+  document.getElementById('breakdown').innerHTML = rows.map(([label, val]) => {
+    const isTotal = label === '__total__';
+    return `<div class="brow${isTotal?' total':''}"><span class="bl">${isTotal?'Total Estimate':label}</span><span class="bv">${val}</span></div>`;
+  }).join('');
 
-  showOnly('step3');
+  showOnly('step3'); setPills(3);
 }
 
+// ── RESET ──
 function startOver() {
   document.querySelectorAll('input[type=radio]').forEach(r => r.checked = false);
-  ['fullName','phone','email','institution','address','notes'].forEach(id => document.getElementById(id).value = '');
+  ['fullName','phone','email','institution','address','notes'].forEach(id => document.getElementById(id).value='');
   document.querySelectorAll('.has-error').forEach(el => el.classList.remove('has-error'));
-  setQty(50); savedData = null; goStep1();
+  setQty(50); savedQuote = null; goStep1();
 }
 
+// ── EMAIL ──
 function sendEmail() {
-  if (!savedData) return;
-  const q = savedData;
-  const sub = encodeURIComponent('Your Sawa Biochar Price Estimate');
-  const body = encodeURIComponent(`Hi ${q.name},\n\nThank you for your interest in Sawa EcoSolutions biochar.\n\nYour indicative price estimate:\n\n  Order: ${q.qty.toLocaleString()} kg · ${q.use}\n  Grade: ${q.productGrade}\n  Unit Price Range: ${idr(q.pricePerKgLow)} – ${idr(q.pricePerKgHigh)} / kg\n  Total Estimate: ${idr(q.totalLow)} – ${idr(q.totalHigh)}\n  Delivery to: ${q.address}\n\nThis is an indicative range only. To confirm your order:\n\n  📞 +62 877-8964-7000\n  📩 info@sawa.green\n  🌐 www.sawa.green\n\nThe SAWA Team`);
+  if (!savedQuote) return;
+  const q = savedQuote;
+  const sub  = encodeURIComponent('Your Sawa Biochar Price Estimate');
+  const body = encodeURIComponent(
+`Hi ${q.name},
+
+Thank you for your interest in Sawa EcoSolutions biochar.
+
+Your indicative price estimate:
+
+  Order:        ${q.qty.toLocaleString()} kg · ${q.useCase}
+  Grade:        ${q.productGrade}
+  Unit Price:   ${idr(q.pricePerKgLow)} – ${idr(q.pricePerKgHigh)} / kg
+  Subtotal:     ${idr(q.subtotalLow)} – ${idr(q.subtotalHigh)}
+  Delivery:     ${idr(q.deliveryLow)} – ${idr(q.deliveryHigh)}
+  Total:        ${idr(q.totalLow)} – ${idr(q.totalHigh)}
+  Deliver to:   ${q.address}
+
+This is an indicative range only. To confirm your order, please contact us:
+
+  📞 +62 877-8964-7000
+  📩 info@sawa.green
+  🌐 www.sawa.green
+
+The SAWA Team`);
   window.location.href = `mailto:${q.email}?subject=${sub}&body=${body}`;
 }
 </script>

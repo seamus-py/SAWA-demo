@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sawa EcoSolutions – Instant Biochar Quote</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --soil:    #2a1f14;
+    --bark:    #4a3320;
+    --moss:    #3d5a2e;
+    --leaf:    #5c8242;
+    --sage:    #8aad6e;
+    --mist:    #d4e6c3;
+    --cream:   #f5f0e8;
+    --char:    #1a1a1a;
+    --smoke:   #6b6b6b;
+    --ash:     #c8c0b4;
+  }
+
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--char); min-height: 100vh; overflow-x: hidden; }
+
+  /* NAV */
+  header {
+    background: var(--soil);
+    padding: 18px 40px;
+    display: flex; align-items: center; gap: 14px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 20px rgba(0,0,0,.35);
+  }
+  .logo-mark { width: 42px; height: 42px; background: var(--leaf); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .logo-text { font-family: 'Playfair Display', serif; color: var(--cream); font-size: 1.5rem; font-weight: 700; letter-spacing: .02em; }
+  .logo-sub  { color: var(--sage); font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; margin-top: 1px; }
+  header .tagline { margin-left: auto; color: var(--ash); font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(160deg, var(--bark) 0%, var(--soil) 55%, #0f1a0c 100%);
+    padding: 80px 40px 64px; text-align: center; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%235c8242' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3.2rem); color: var(--cream); line-height: 1.2; position: relative; }
+  .hero h1 span { color: var(--sage); }
+  .hero p { margin: 16px auto 0; max-width: 560px; color: var(--ash); font-size: 1rem; line-height: 1.7; position: relative; }
+  .co2-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(92,130,66,.2); border: 1px solid var(--leaf); border-radius: 100px; padding: 6px 16px; color: var(--sage); font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 24px; position: relative; }
+  .co2-badge::before { content: '🌿'; }
+
+  /* LAYOUT */
+  .container { max-width: 860px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  /* STEP PILLS */
+  .steps { display: flex; margin-bottom: 40px; border-radius: 12px; overflow: hidden; border: 1px solid var(--ash); }
+  .step { flex: 1; padding: 12px 8px; text-align: center; background: #fff; border-right: 1px solid var(--ash); transition: background .2s; }
+  .step:last-child { border-right: none; }
+  .step.active { background: var(--moss); }
+  .step.done   { background: var(--leaf); }
+  .step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--ash); color: #fff; font-size: .72rem; font-weight: 600; display: flex; align-items: center; justify-content: center; margin: 0 auto 4px; transition: background .2s; }
+  .step.active .step-num { background: var(--sage); }
+  .step.done   .step-num { background: var(--cream); color: var(--moss); }
+  .step-label { font-size: .7rem; color: var(--smoke); text-transform: uppercase; letter-spacing: .06em; }
+  .step.active .step-label, .step.done .step-label { color: var(--cream); }
+
+  /* CARD */
+  .card { background: #fff; border-radius: 20px; padding: 40px; box-shadow: 0 4px 32px rgba(42,31,20,.08); border: 1px solid rgba(138,173,110,.2); animation: fadeUp .4s ease both; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+  .card-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--bark); margin-bottom: 6px; }
+  .card-sub { color: var(--smoke); font-size: .9rem; margin-bottom: 32px; }
+
+  /* FORM */
+  .field { margin-bottom: 22px; }
+  label { display: block; font-size: .82rem; font-weight: 500; color: var(--bark); margin-bottom: 6px; letter-spacing: .02em; }
+  label .req { color: var(--leaf); margin-left: 2px; }
+  input[type=text], input[type=email], input[type=tel], select, textarea {
+    width: 100%; padding: 11px 14px; border: 1.5px solid var(--ash); border-radius: 10px;
+    font-family: 'DM Sans', sans-serif; font-size: .95rem; color: var(--char);
+    background: var(--cream); transition: border-color .2s, box-shadow .2s; appearance: none; outline: none;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--leaf); box-shadow: 0 0 0 3px rgba(92,130,66,.12); background: #fff; }
+  textarea { resize: vertical; min-height: 90px; }
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media(max-width:580px){ .row-2 { grid-template-columns:1fr; } }
+
+  /* TILES */
+  .tile-group { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+  .tile input { position: absolute; opacity: 0; pointer-events: none; }
+  .tile label { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 14px 10px; border: 1.5px solid var(--ash); border-radius: 12px; cursor: pointer; text-align: center; font-size: .8rem; color: var(--smoke); font-weight: 400; transition: all .18s; background: var(--cream); min-height: 80px; }
+  .tile label .icon { font-size: 1.5rem; }
+  .tile input:checked + label { border-color: var(--leaf); background: rgba(92,130,66,.08); color: var(--moss); font-weight: 500; box-shadow: 0 0 0 3px rgba(92,130,66,.1); }
+  .tile label:hover { border-color: var(--sage); background: #fff; }
+
+  /* QTY */
+  .qty-display { font-family: 'Playfair Display', serif; font-size: 2.4rem; color: var(--moss); text-align: center; margin: 8px 0; }
+  .qty-display span { font-size: 1rem; color: var(--smoke); }
+  .qty-equiv { text-align: center; font-size: .78rem; color: var(--smoke); margin-top: -4px; margin-bottom: 8px; }
+  input[type=range] { width: 100%; height: 6px; appearance: none; background: var(--ash); border-radius: 4px; outline: none; cursor: pointer; }
+  input[type=range]::-webkit-slider-thumb { appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--leaf); border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+  .qty-presets { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .qty-btn { padding: 5px 14px; border-radius: 100px; border: 1.5px solid var(--ash); background: var(--cream); font-size: .78rem; color: var(--smoke); cursor: pointer; transition: all .15s; font-family: 'DM Sans', sans-serif; }
+  .qty-btn:hover, .qty-btn.active { border-color: var(--leaf); color: var(--moss); background: rgba(92,130,66,.08); }
+
+  /* BUTTONS */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 32px; border-radius: 12px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: .95rem; font-weight: 500; transition: all .2s; }
+  .btn-primary { background: var(--moss); color: #fff; box-shadow: 0 4px 16px rgba(61,90,46,.3); }
+  .btn-primary:hover { background: var(--leaf); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(61,90,46,.35); }
+  .btn-ghost { background: transparent; color: var(--smoke); }
+  .btn-ghost:hover { color: var(--bark); }
+  .btn-row { display: flex; gap: 12px; justify-content: flex-end; margin-top: 32px; }
+
+  /* RESULT */
+  .quote-header {
+    background: linear-gradient(135deg, var(--moss) 0%, var(--leaf) 100%);
+    border-radius: 16px; padding: 32px; color: #fff; margin-bottom: 24px; position: relative; overflow: hidden;
+  }
+  .quote-header::after { content: '🌿'; position: absolute; right: 24px; top: 50%; transform: translateY(-50%); font-size: 4rem; opacity: .2; }
+  .quote-header h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 4px; }
+  .quote-header .subtitle { opacity: .8; font-size: .88rem; margin-bottom: 20px; }
+  .range-row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .range-low  { font-family: 'Playfair Display', serif; font-size: 1.6rem; opacity: .85; }
+  .range-dash { font-size: 1.2rem; opacity: .6; }
+  .range-high { font-family: 'Playfair Display', serif; font-size: 2.6rem; }
+  .range-unit { font-size: .9rem; opacity: .75; }
+  .range-note { font-size: .77rem; opacity: .65; margin-top: 10px; line-height: 1.5; }
+
+  .breakdown { background: var(--cream); border-radius: 12px; border: 1px solid rgba(138,173,110,.25); overflow: hidden; margin-bottom: 16px; }
+  .breakdown table { width: 100%; border-collapse: collapse; }
+  .breakdown td { padding: 12px 18px; font-size: .88rem; border-bottom: 1px solid rgba(0,0,0,.06); vertical-align: top; }
+  .breakdown tr:last-child td { border-bottom: none; }
+  .breakdown td:first-child { color: var(--smoke); width: 44%; }
+  .breakdown td:last-child { font-weight: 500; color: var(--bark); text-align: right; }
+  .breakdown .total-row td { background: rgba(92,130,66,.08); font-weight: 700; }
+  .breakdown .total-row td:first-child { color: var(--moss); }
+  .breakdown .total-row td:last-child { color: var(--moss); font-size: 1rem; }
+
+  .ai-note { background: rgba(92,130,66,.07); border: 1px solid rgba(92,130,66,.2); border-radius: 12px; padding: 20px; margin-top: 16px; }
+  .ai-note-head { display: flex; align-items: center; gap: 8px; font-weight: 500; color: var(--moss); margin-bottom: 8px; font-size: .88rem; }
+  .ai-note p { font-size: .85rem; color: var(--smoke); line-height: 1.65; }
+
+  .warning-note { background: #fffbf0; border: 1px solid #e8d080; border-radius: 12px; padding: 18px 20px; margin-top: 16px; font-size: .83rem; color: #7a6000; line-height: 1.6; }
+  .warning-note strong { color: #5a4400; }
+
+  .contact-bar { background: var(--soil); border-radius: 14px; padding: 20px 24px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-top: 24px; }
+  .contact-bar span { color: var(--ash); font-size: .82rem; }
+  .contact-bar a { color: var(--sage); text-decoration: none; }
+  .contact-bar a:hover { color: var(--mist); }
+
+  /* LOADING */
+  .loading-card { text-align: center; padding: 60px 20px; }
+  .spinner { width: 48px; height: 48px; border: 4px solid var(--mist); border-top-color: var(--leaf); border-radius: 50%; margin: 0 auto 20px; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-card p { color: var(--smoke); font-size: .9rem; }
+
+  /* MISC */
+  .divider { height: 1px; background: rgba(0,0,0,.07); margin: 24px 0; }
+  .err { color: #c0392b; font-size: .82rem; margin-top: 4px; display: none; }
+  .has-error input, .has-error select, .has-error textarea { border-color: #e74c3c; }
+  .has-error .err { display: block; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">🌿</div>
+  <div>
+    <div class="logo-text">SAWA</div>
+    <div class="logo-sub">EcoSolutions</div>
+  </div>
+  <div class="tagline">Biochar · Carbon Removal · Soil Regeneration</div>
+</header>
+
+<div class="hero">
+  <div class="co2-badge">Powered by Clean Pyrolysis</div>
+  <h1>Get Your <span>Instant Biochar</span><br>Price Estimate</h1>
+  <p>Tell us what you need — we'll generate a personalised price range instantly. No waiting, no obligation.</p>
+</div>
+
+<div class="container">
+
+  <div class="steps" id="stepBar">
+    <div class="step active" id="pill-1"><div class="step-num">1</div><div class="step-label">Your Info</div></div>
+    <div class="step" id="pill-2"><div class="step-num">2</div><div class="step-label">Order Details</div></div>
+    <div class="step" id="pill-3"><div class="step-num">3</div><div class="step-label">Price Estimate</div></div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="card" id="step1">
+    <div class="card-title">Who are we quoting?</div>
+    <div class="card-sub">We need a few details to personalise your estimate.</div>
+
+    <div class="row-2">
+      <div class="field" id="f-name"><label>Full Name <span class="req">*</span></label><input type="text" id="fullName" placeholder="e.g. Budi Santoso"><div class="err">Please enter your name.</div></div>
+      <div class="field" id="f-phone"><label>Phone Number <span class="req">*</span></label><input type="tel" id="phone" placeholder="+62 877 …"><div class="err">Please enter a phone number.</div></div>
+    </div>
+    <div class="field" id="f-email"><label>Email Address <span class="req">*</span></label><input type="email" id="email" placeholder="you@example.com"><div class="err">Please enter a valid email.</div></div>
+
+    <div class="field" id="f-buyer">
+      <label>Ordering on behalf of <span class="req">*</span></label>
+      <div class="tile-group">
+        <div class="tile"><input type="radio" name="buyer" id="b1" value="Individual Farmer"><label for="b1"><span class="icon">🧑‍🌾</span>Individual Farmer</label></div>
+        <div class="tile"><input type="radio" name="buyer" id="b2" value="Cooperative / Farming Group"><label for="b2"><span class="icon">🤝</span>Cooperative / Group</label></div>
+        <div class="tile"><input type="radio" name="buyer" id="b3" value="NGO / Government Program"><label for="b3"><span class="icon">🏛️</span>NGO / Government</label></div>
+        <div class="tile"><input type="radio" name="buyer" id="b4" value="Other"><label for="b4"><span class="icon">🏢</span>Other</label></div>
+      </div>
+      <div class="err">Please select a buyer type.</div>
+    </div>
+
+    <div class="row-2">
+      <div class="field" id="f-institution"><label>Institution / Organisation <span class="req">*</span></label><input type="text" id="institution" placeholder="e.g. Koperasi Tani Maju"><div class="err">Please enter an institution name.</div></div>
+      <div class="field" id="f-address"><label>Delivery Province / City <span class="req">*</span></label><input type="text" id="address" placeholder="e.g. Majalengka, West Java"><div class="err">Please enter your delivery location.</div></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="goStep2()">Next: Order Details →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="card hidden" id="step2">
+    <div class="card-title">What do you need?</div>
+    <div class="card-sub">Select your quantity and intended use — these are the key factors in your price range.</div>
+
+    <div class="field">
+      <label>Quantity of Biochar <span class="req">*</span></label>
+      <div class="qty-display" id="qtyDisplay">50 <span>kg</span></div>
+      <div class="qty-equiv" id="qtyEquiv">≈ 1 standard 50 kg sack</div>
+      <input type="range" id="qtySlider" min="5" max="1000" value="50" step="5" oninput="updateQty(this.value)">
+      <div class="qty-presets">
+        <button class="qty-btn" onclick="setQty(5)">5 kg</button>
+        <button class="qty-btn" onclick="setQty(10)">10 kg</button>
+        <button class="qty-btn" onclick="setQty(25)">25 kg</button>
+        <button class="qty-btn active" onclick="setQty(50)">50 kg</button>
+        <button class="qty-btn" onclick="setQty(100)">100 kg</button>
+        <button class="qty-btn" onclick="setQty(250)">250 kg</button>
+        <button class="qty-btn" onclick="setQty(500)">500 kg</button>
+        <button class="qty-btn" onclick="setQty(1000)">1 000 kg</button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="field" id="f-use">
+      <label>Intended Use <span class="req">*</span></label>
+      <div class="tile-group">
+        <div class="tile"><input type="radio" name="use" id="u1" value="Rice Plantation"><label for="u1"><span class="icon">🌾</span>Rice Plantation</label></div>
+        <div class="tile"><input type="radio" name="use" id="u2" value="Compost"><label for="u2"><span class="icon">♻️</span>Compost</label></div>
+        <div class="tile"><input type="radio" name="use" id="u3" value="Palm Oil"><label for="u3"><span class="icon">🌴</span>Palm Oil</label></div>
+        <div class="tile"><input type="radio" name="use" id="u4" value="Horticulture"><label for="u4"><span class="icon">🥦</span>Horticulture</label></div>
+        <div class="tile"><input type="radio" name="use" id="u5" value="Livestock Feed"><label for="u5"><span class="icon">🐄</span>Livestock Feed</label></div>
+        <div class="tile"><input type="radio" name="use" id="u6" value="Construction"><label for="u6"><span class="icon">🏗️</span>Construction</label></div>
+        <div class="tile"><input type="radio" name="use" id="u7" value="Other"><label for="u7"><span class="icon">💡</span>Other</label></div>
+      </div>
+      <div class="err">Please select an intended use.</div>
+    </div>
+
+    <div class="field"><label>Additional Information</label><textarea id="notes" placeholder="Any specific requirements, delivery timeframe, or questions…"></textarea></div>
+
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goStep1()">← Back</button>
+      <button class="btn btn-primary" onclick="generateQuote()">Get My Price Estimate ✦</button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="card hidden" id="stepLoading">
+    <div class="loading-card">
+      <div class="spinner"></div>
+      <p>Analysing your requirements and generating a price range…</p>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="card hidden" id="step3">
+
+    <div class="quote-header">
+      <h2>Your Price Estimate</h2>
+      <div class="subtitle" id="quoteSubtitle"></div>
+      <div class="range-row">
+        <span class="range-low" id="rangeLow"></span>
+        <span class="range-dash">–</span>
+        <span class="range-high" id="rangeHigh"></span>
+        <span class="range-unit">IDR total</span>
+      </div>
+      <div class="range-note" id="rangeNote"></div>
+    </div>
+
+    <div class="breakdown">
+      <table id="quoteTable"></table>
+    </div>
+
+    <div class="ai-note">
+      <div class="ai-note-head">📋 Product Recommendation</div>
+      <p id="aiNoteText"></p>
+    </div>
+
+    <div class="warning-note">
+      <strong>⚠️ About this estimate:</strong> <span id="warningText"></span>
+    </div>
+
+    <div class="contact-bar">
+      <span>Ready to confirm your order?</span>
+      <a href="tel:+6287789647000">📞 +62 877-8964-7000</a>
+      <a href="mailto:info@sawa.green">📩 info@sawa.green</a>
+      <a href="https://www.instagram.com/sawa.ecosolutions" target="_blank">📷 @sawa.ecosolutions</a>
+      <a href="https://www.sawa.green" target="_blank">🌐 sawa.green</a>
+    </div>
+
+    <div class="btn-row" style="margin-top:20px">
+      <button class="btn btn-ghost" onclick="startOver()">← New Estimate</button>
+      <button class="btn btn-primary" onclick="sendEmail()">📧 Email Me This Estimate</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let qty = 50;
+let savedData = null;
+
+function updateQty(v) {
+  qty = parseInt(v);
+  document.getElementById('qtyDisplay').innerHTML = `${qty.toLocaleString()} <span>kg</span>`;
+  document.getElementById('qtyEquiv').textContent = getEquiv(qty);
+  document.querySelectorAll('.qty-btn').forEach(b => b.classList.remove('active'));
+}
+function setQty(v) {
+  qty = v;
+  document.getElementById('qtySlider').value = v;
+  updateQty(v);
+  document.querySelectorAll('.qty-btn').forEach(b => {
+    if (parseInt(b.textContent.replace(/\s/g,'')) === v) b.classList.add('active');
+  });
+}
+function getEquiv(q) {
+  if (q <= 5)   return '≈ 1 small trial bag';
+  if (q <= 25)  return '≈ half a standard sack';
+  if (q <= 50)  return '≈ 1 standard 50 kg sack';
+  if (q <= 100) return `≈ ${Math.round(q/50)} standard sacks`;
+  if (q < 1000) return `≈ ${(q/1000).toFixed(2)} tonnes`;
+  return '≈ 1 tonne – bulk order';
+}
+
+function setPills(active) {
+  for (let i = 1; i <= 3; i++) {
+    const p = document.getElementById(`pill-${i}`);
+    p.className = 'step' + (i < active ? ' done' : i === active ? ' active' : '');
+    p.querySelector('.step-num').textContent = i < active ? '✓' : i;
+  }
+}
+function showOnly(id) {
+  ['step1','step2','stepLoading','step3'].forEach(s => document.getElementById(s).classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function validate1() {
+  let ok = true;
+  [['f-name','fullName',v=>v.trim().length>1],['f-phone','phone',v=>v.trim().length>5],['f-email','email',v=>/\S+@\S+\.\S+/.test(v)],['f-institution','institution',v=>v.trim().length>1],['f-address','address',v=>v.trim().length>2]].forEach(([fid,iid,test])=>{
+    const el = document.getElementById(iid), fd = document.getElementById(fid), p = test(el.value);
+    fd.classList.toggle('has-error', !p); if(!p) ok=false;
+  });
+  const buyer = document.querySelector('input[name="buyer"]:checked');
+  document.getElementById('f-buyer').classList.toggle('has-error', !buyer); if(!buyer) ok=false;
+  return ok;
+}
+function validate2() {
+  const use = document.querySelector('input[name="use"]:checked');
+  document.getElementById('f-use').classList.toggle('has-error', !use); return !!use;
+}
+
+function goStep1() { showOnly('step1'); setPills(1); }
+function goStep2() { if (validate1()) { showOnly('step2'); setPills(2); } }
+
+async function generateQuote() {
+  if (!validate2()) return;
+  showOnly('stepLoading'); setPills(3);
+
+  const d = {
+    name: document.getElementById('fullName').value,
+    email: document.getElementById('email').value,
+    phone: document.getElementById('phone').value,
+    buyer: document.querySelector('input[name="buyer"]:checked').value,
+    institution: document.getElementById('institution').value,
+    address: document.getElementById('address').value,
+    qty, use: document.querySelector('input[name="use"]:checked').value,
+    notes: document.getElementById('notes').value,
+  };
+
+  const prompt = `You are a pricing analyst for Sawa EcoSolutions (sawa.green), an Indonesian biochar company producing biochar from sugarcane bagasse and palm EFB via clean pyrolysis, based in Majalengka, West Java. Generate a realistic PRICE RANGE estimate (low and high).
+
+Customer: ${d.buyer} (${d.institution}), delivery: ${d.address}, quantity: ${d.qty} kg, use: ${d.use}, notes: ${d.notes||'None'}
+
+Pricing context:
+- 5–49 kg: IDR 8,000–13,000/kg
+- 50–199 kg: IDR 6,500–10,000/kg
+- 200–499 kg: IDR 5,000–8,000/kg
+- 500+ kg: IDR 3,500–6,500/kg
+- Livestock feed: +5–15% premium. Construction: -10–20%.
+- Delivery within Java: IDR 50,000–150,000. Outer Java: IDR 200,000–600,000.
+- Cooperatives/NGOs lean toward lower end of range.
+
+Respond ONLY with JSON (no markdown, no extra text):
+{"pricePerKgLow":number,"pricePerKgHigh":number,"subtotalLow":number,"subtotalHigh":number,"deliveryLow":number,"deliveryHigh":number,"totalLow":number,"totalHigh":number,"productGrade":string,"deliveryNote":string,"recommendation":string,"validDays":number}`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({model:'claude-sonnet-4-20250514', max_tokens:1000, messages:[{role:'user',content:prompt}]})
+    });
+    const json = await res.json();
+    const raw = json.content.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
+    savedData = {...JSON.parse(raw), ...d};
+    renderQuote(savedData);
+  } catch(e) {
+    const L=qty>=500?3500:qty>=200?5000:qty>=50?6500:8000, H=qty>=500?6500:qty>=200?8000:qty>=50?10000:13000;
+    savedData = {pricePerKgLow:L,pricePerKgHigh:H,subtotalLow:L*qty,subtotalHigh:H*qty,deliveryLow:50000,deliveryHigh:200000,totalLow:L*qty+50000,totalHigh:H*qty+200000,productGrade:'Agricultural Grade – Soil Amendment',deliveryNote:'Standard Java delivery estimate.',recommendation:`For ${d.use.toLowerCase()}, apply biochar at 1–2 t/ha mixed with compost for best results. Improves water retention and nutrient cycling. Each kg sequesters approximately 3 kg of CO₂ permanently.`,validDays:10,...d};
+    renderQuote(savedData);
+  }
+}
+
+function idr(n) { return 'IDR ' + parseInt(n).toLocaleString('id-ID'); }
+
+function renderQuote(q) {
+  document.getElementById('quoteSubtitle').textContent = `${q.qty.toLocaleString()} kg · ${q.use} · ${q.buyer}`;
+  document.getElementById('rangeLow').textContent  = idr(q.totalLow);
+  document.getElementById('rangeHigh').textContent = idr(q.totalHigh);
+  document.getElementById('rangeNote').textContent = `Range reflects quantity tier, delivery to ${q.address}, and product grade. Final price confirmed by the Sawa team.`;
+
+  document.getElementById('quoteTable').innerHTML = `
+    <tr><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);color:var(--smoke);width:44%">Product Grade</td><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);font-weight:500;color:var(--bark);text-align:right">${q.productGrade}</td></tr>
+    <tr><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);color:var(--smoke)">Quantity</td><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);font-weight:500;color:var(--bark);text-align:right">${q.qty.toLocaleString()} kg</td></tr>
+    <tr><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);color:var(--smoke)">Unit Price Range</td><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);font-weight:500;color:var(--bark);text-align:right">${idr(q.pricePerKgLow)} – ${idr(q.pricePerKgHigh)} / kg</td></tr>
+    <tr><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);color:var(--smoke)">Subtotal Range</td><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);font-weight:500;color:var(--bark);text-align:right">${idr(q.subtotalLow)} – ${idr(q.subtotalHigh)}</td></tr>
+    <tr><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);color:var(--smoke)">Est. Delivery</td><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);font-weight:500;color:var(--bark);text-align:right">${idr(q.deliveryLow)} – ${idr(q.deliveryHigh)}<br><small style="color:var(--smoke);font-weight:400">${q.deliveryNote}</small></td></tr>
+    <tr style="background:rgba(92,130,66,.08)"><td style="padding:12px 18px;font-size:.88rem;font-weight:700;color:var(--moss)">Total Estimate</td><td style="padding:12px 18px;font-size:1rem;font-weight:700;color:var(--moss);text-align:right">${idr(q.totalLow)} – ${idr(q.totalHigh)}</td></tr>
+    <tr><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);color:var(--smoke)">Buyer</td><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);font-weight:500;color:var(--bark);text-align:right">${q.buyer} — ${q.institution}</td></tr>
+    <tr><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);color:var(--smoke)">Delivery Location</td><td style="padding:12px 18px;font-size:.88rem;border-bottom:1px solid rgba(0,0,0,.06);font-weight:500;color:var(--bark);text-align:right">${q.address}</td></tr>
+    <tr><td style="padding:12px 18px;font-size:.88rem;color:var(--smoke)">Estimate Valid</td><td style="padding:12px 18px;font-size:.88rem;font-weight:500;color:var(--bark);text-align:right">${q.validDays} business days</td></tr>`;
+
+  document.getElementById('aiNoteText').textContent = q.recommendation;
+  document.getElementById('warningText').textContent = `This is an indicative price range for ${q.qty.toLocaleString()} kg ordered by a ${q.buyer.toLowerCase()} in ${q.address}. The final confirmed price may fall within or near this range depending on current stock, exact delivery address, and any applicable bulk or cooperative discounts. Contact info@sawa.green to confirm your order.`;
+
+  showOnly('step3');
+}
+
+function startOver() {
+  document.querySelectorAll('input[type=radio]').forEach(r => r.checked = false);
+  ['fullName','phone','email','institution','address','notes'].forEach(id => document.getElementById(id).value = '');
+  document.querySelectorAll('.has-error').forEach(el => el.classList.remove('has-error'));
+  setQty(50); savedData = null; goStep1();
+}
+
+function sendEmail() {
+  if (!savedData) return;
+  const q = savedData;
+  const sub = encodeURIComponent('Your Sawa Biochar Price Estimate');
+  const body = encodeURIComponent(`Hi ${q.name},\n\nThank you for your interest in Sawa EcoSolutions biochar.\n\nYour indicative price estimate:\n\n  Order: ${q.qty.toLocaleString()} kg · ${q.use}\n  Grade: ${q.productGrade}\n  Unit Price Range: ${idr(q.pricePerKgLow)} – ${idr(q.pricePerKgHigh)} / kg\n  Total Estimate: ${idr(q.totalLow)} – ${idr(q.totalHigh)}\n  Delivery to: ${q.address}\n\nThis is an indicative range only. To confirm your order:\n\n  📞 +62 877-8964-7000\n  📩 info@sawa.green\n  🌐 www.sawa.green\n\nThe SAWA Team`);
+  window.location.href = `mailto:${q.email}?subject=${sub}&body=${body}`;
+}
+</script>
+</body>
+</html>
